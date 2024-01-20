@@ -1,12 +1,22 @@
 param dateTime string = utcNow()
+@description('Select the location to deploy the resources')
+@allowed([
+  'italynorth'
+  'northeurope'
+])
 param location string = 'italynorth'
-param RG1 string = 'RG-network'
-param RG2 string = 'RG-identity'
-param vmusername string = 'hotflower9167'
+var RG1 ='RG-network'
+var RG2 = 'RG-identity'
+//param RG1 string = 'RG-network'
+//param RG2 string = 'RG-identity'
+param vmusername string = 'hotpolluter42069'
+@minLength(1)
+@maxLength(12)
+param customername string ='ACS'
 @secure()
 param vmpassword string
-var vnetname = 'vnet-customer'
-var subnetname = 'snet-identity'
+var vnetname = 'vnet-${customername}'
+var subnetname = 'snet-${customername}'
 targetScope = 'subscription'
 
 @description('deploy platform RGs')
@@ -82,8 +92,6 @@ module DC01 'DomainController/DCs.bicep' = {
   }
 }
 
-
-
 @description('deploy public IP for dc01')
 module PIPdc02 'Networking/PublicIP.bicep' = {
   scope: rg02
@@ -112,7 +120,7 @@ module NIC2 'Networking/NIC.bicep' = {
 @description('deploy DC01')
 module DC02 'DomainController/DCs.bicep' = {
   scope: rg02
-  name: 'dc02-azure'
+  name: 'AZ-DC01'
   params: {
     adminPassword: vmpassword
     adminUsername: vmusername
