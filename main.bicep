@@ -9,10 +9,16 @@ var RG1 ='RG-network'
 var RG2 = 'RG-identity'
 //param RG1 string = 'RG-network'
 //param RG2 string = 'RG-identity'
-param vmusername string = 'hotpolluter42069'
+
+@description('insert the name of the company')
 @minLength(1)
 @maxLength(12)
 param customername string ='ACS'
+@description('Username used for local administrator in the VM')
+@minLength(8)
+@maxLength(24)
+param vmusername string = 'hotpolluter42069'
+@description('Password used for the local administrator of the VM')
 @secure()
 param vmpassword string
 var vnetname = 'vnet-${customername}'
