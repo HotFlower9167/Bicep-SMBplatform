@@ -1,12 +1,841 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.22.6.54827",
-      "templateHash": "9018524887641986178"
+      "version": "0.25.53.49325",
+      "templateHash": "2133372815623757054"
     }
   },
-  "resources": []
+  "parameters": {
+    "dateTime": {
+      "type": "string",
+      "defaultValue": "[utcNow()]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "italynorth",
+      "allowedValues": [
+        "italynorth",
+        "northeurope"
+      ],
+      "metadata": {
+        "description": "Select the location to deploy the resources"
+      }
+    },
+    "customername": {
+      "type": "string",
+      "defaultValue": "ACS",
+      "minLength": 1,
+      "maxLength": 12,
+      "metadata": {
+        "description": "insert the name of the company"
+      }
+    },
+    "VMusername": {
+      "type": "string",
+      "defaultValue": "hotpolluter42069",
+      "minLength": 8,
+      "maxLength": 24,
+      "metadata": {
+        "description": "Username used for local administrator in the VM"
+      }
+    },
+    "VMpassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password used for the local administrator of the VM"
+      }
+    }
+  },
+  "variables": {
+    "RG1": "RG-network",
+    "RG2": "RG-identity",
+    "vnetname": "[format('vnet-{0}', parameters('customername'))]",
+    "subnetname": "[format('snet-{0}', parameters('customername'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('RG1')]",
+      "location": "[parameters('location')]",
+      "metadata": {
+        "description": "deploy platform RGs"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2023-07-01",
+      "name": "[variables('RG2')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('vnetdeploy-{0}', parameters('dateTime'))]",
+      "resourceGroup": "[variables('RG1')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "vnetAddressPrefix": {
+            "value": "10.94.0.0/16"
+          },
+          "vnetName": {
+            "value": "[variables('vnetname')]"
+          },
+          "subnetAddressPrefix": {
+            "value": "10.94.10.0/24"
+          },
+          "subnetName": {
+            "value": "[variables('subnetname')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "1340593631595242650"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetAddressPrefix": {
+              "type": "string"
+            },
+            "subnetName": {
+              "type": "string"
+            },
+            "subnetAddressPrefix": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2021-02-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressPrefix')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('subnetAddressPrefix')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG1'))]"
+      ],
+      "metadata": {
+        "description": "deploy the vnet"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "nsgDC",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "10059962833822154311"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "nsgName": {
+              "type": "string",
+              "defaultValue": "NSG-DC"
+            },
+            "rdpPort": {
+              "type": "string",
+              "defaultValue": "3389"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('nsgName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "AllowRDP",
+                    "properties": {
+                      "priority": 1000,
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "[parameters('rdpPort')]",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "direction": "Inbound"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "nsgId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy the NSG"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "pipdc01",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "pipname": {
+            "value": "PIP-DC01"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "1760147066367571622"
+            }
+          },
+          "parameters": {
+            "pipname": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('pipname')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              }
+            }
+          ],
+          "outputs": {
+            "publicIP": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('pipname'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy public IP for dc01"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "NIC-DC01",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nicName": {
+            "value": "NIC-DC01"
+          },
+          "vnetname": {
+            "value": "[variables('vnetname')]"
+          },
+          "rgidentityname": {
+            "value": "[variables('RG1')]"
+          },
+          "pipid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'pipdc01'), '2022-09-01').outputs.publicIP.value]"
+          },
+          "nsgid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'nsgDC'), '2022-09-01').outputs.nsgId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "8117534489897330819"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "nicName": {
+              "type": "string"
+            },
+            "vnetname": {
+              "type": "string"
+            },
+            "rgidentityname": {
+              "type": "string"
+            },
+            "pipid": {
+              "type": "string"
+            },
+            "nsgid": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkInterfaces",
+              "apiVersion": "2021-02-01",
+              "name": "[parameters('nicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[parameters('pipid')]"
+                      },
+                      "subnet": {
+                        "id": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgidentityname')), 'Microsoft.Network/virtualNetworks', parameters('vnetname')), '2023-05-01').subnets[0].id]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[parameters('nsgid')]"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "nicId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG1')), 'Microsoft.Resources/deployments', format('vnetdeploy-{0}', parameters('dateTime')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'nsgDC')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'pipdc01')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG1'))]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy NIC1"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "dc01-azure",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "adminPassword": {
+            "value": "[parameters('VMpassword')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('VMusername')]"
+          },
+          "imageOffer": {
+            "value": "WindowsServer"
+          },
+          "imagePublisher": {
+            "value": "MicrosoftWindowsServer"
+          },
+          "imageSku": {
+            "value": "2022-datacenter-azure-edition-hotpatch-smalldisk"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nicId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'NIC-DC01'), '2022-09-01').outputs.nicId.value]"
+          },
+          "vmName": {
+            "value": "DC01-Azure"
+          },
+          "vmSize": {
+            "value": "Standard_B2s"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "5865411850512849988"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "vmName": {
+              "type": "string"
+            },
+            "adminUsername": {
+              "type": "string"
+            },
+            "adminPassword": {
+              "type": "securestring"
+            },
+            "vmSize": {
+              "type": "string"
+            },
+            "nicId": {
+              "type": "string"
+            },
+            "imagePublisher": {
+              "type": "string"
+            },
+            "imageOffer": {
+              "type": "string"
+            },
+            "imageSku": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('vmName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                  "computerName": "[parameters('vmName')]",
+                  "adminUsername": "[parameters('adminUsername')]",
+                  "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "publisher": "[parameters('imagePublisher')]",
+                    "offer": "[parameters('imageOffer')]",
+                    "sku": "[parameters('imageSku')]",
+                    "version": "latest"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "managedDisk": {
+                      "storageAccountType": "StandardSSD_LRS"
+                    }
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[parameters('nicId')]"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "vmId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'NIC-DC01')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy DC01"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "pipdc02",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "pipname": {
+            "value": "PIP-DC02"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "1760147066367571622"
+            }
+          },
+          "parameters": {
+            "pipname": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('pipname')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              }
+            }
+          ],
+          "outputs": {
+            "publicIP": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('pipname'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy public IP for dc01"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "NIC-DC02",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nicName": {
+            "value": "NIC-DC02"
+          },
+          "vnetname": {
+            "value": "[variables('vnetname')]"
+          },
+          "rgidentityname": {
+            "value": "[variables('RG1')]"
+          },
+          "pipid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'pipdc02'), '2022-09-01').outputs.publicIP.value]"
+          },
+          "nsgid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'nsgDC'), '2022-09-01').outputs.nsgId.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "8117534489897330819"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "nicName": {
+              "type": "string"
+            },
+            "vnetname": {
+              "type": "string"
+            },
+            "rgidentityname": {
+              "type": "string"
+            },
+            "pipid": {
+              "type": "string"
+            },
+            "nsgid": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/networkInterfaces",
+              "apiVersion": "2021-02-01",
+              "name": "[parameters('nicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[parameters('pipid')]"
+                      },
+                      "subnet": {
+                        "id": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgidentityname')), 'Microsoft.Network/virtualNetworks', parameters('vnetname')), '2023-05-01').subnets[0].id]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[parameters('nsgid')]"
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "nicId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkInterfaces', parameters('nicName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG1')), 'Microsoft.Resources/deployments', format('vnetdeploy-{0}', parameters('dateTime')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'nsgDC')]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'pipdc02')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG1'))]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy NIC2"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "AZ-DC02",
+      "resourceGroup": "[variables('RG2')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "adminPassword": {
+            "value": "[parameters('VMpassword')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('VMusername')]"
+          },
+          "imageOffer": {
+            "value": "WindowsServer"
+          },
+          "imagePublisher": {
+            "value": "MicrosoftWindowsServer"
+          },
+          "imageSku": {
+            "value": "2022-datacenter-azure-edition-hotpatch-smalldisk"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "nicId": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'NIC-DC02'), '2022-09-01').outputs.nicId.value]"
+          },
+          "vmName": {
+            "value": "DC02-Azure"
+          },
+          "vmSize": {
+            "value": "Standard_B2s"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.25.53.49325",
+              "templateHash": "5865411850512849988"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "vmName": {
+              "type": "string"
+            },
+            "adminUsername": {
+              "type": "string"
+            },
+            "adminPassword": {
+              "type": "securestring"
+            },
+            "vmSize": {
+              "type": "string"
+            },
+            "nicId": {
+              "type": "string"
+            },
+            "imagePublisher": {
+              "type": "string"
+            },
+            "imageOffer": {
+              "type": "string"
+            },
+            "imageSku": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('vmName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                  "computerName": "[parameters('vmName')]",
+                  "adminUsername": "[parameters('adminUsername')]",
+                  "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "publisher": "[parameters('imagePublisher')]",
+                    "offer": "[parameters('imageOffer')]",
+                    "sku": "[parameters('imageSku')]",
+                    "version": "latest"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "managedDisk": {
+                      "storageAccountType": "StandardSSD_LRS"
+                    }
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[parameters('nicId')]"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "vmId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, variables('RG2')), 'Microsoft.Resources/deployments', 'NIC-DC02')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', variables('RG2'))]"
+      ],
+      "metadata": {
+        "description": "deploy DC02"
+      }
+    }
+  ]
 }
