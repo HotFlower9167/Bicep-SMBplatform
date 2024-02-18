@@ -1,1 +1,6 @@
 https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fazure-quickstart-templates%2Fmaster%2Fquickstarts%2Fmicrosoft.network%2Faad-domainservices%2Fazuredeploy.json
+
+https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FHotFlower9167%2FBicep-SMBplatform%2Fmain%2Fmain.json
+
+
+image:https://aka.ms/deploytoazurebutton[link=https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FHotFlower9167%2FBicep-SMBplatform%2Fmain%2Fmain.json]
