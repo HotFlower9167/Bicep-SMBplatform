@@ -24,7 +24,7 @@
         "description": "Select the location to deploy the resources"
       }
     },
-    "customername": {
+    "customerName": {
       "type": "string",
       "defaultValue": "ACS",
       "minLength": 1,
@@ -33,7 +33,7 @@
         "description": "insert the name of the company"
       }
     },
-    "VmUsername": {
+    "vmUsername": {
       "type": "string",
       "defaultValue": "hotpolluter42069",
       "minLength": 8,
@@ -42,7 +42,7 @@
         "description": "Username used for local administrator in the VM"
       }
     },
-    "VmPassword": {
+    "vmPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Password used for the local administrator of the VM"
@@ -52,8 +52,8 @@
   "variables": {
     "RG1": "RG-network",
     "RG2": "RG-identity",
-    "vnetname": "[format('vnet-{0}', parameters('customername'))]",
-    "subnetname": "[format('snet-{0}', parameters('customername'))]"
+    "vnetname": "[format('vnet-{0}', parameters('customerName'))]",
+    "subnetname": "[format('snet-{0}', parameters('customerName'))]"
   },
   "resources": [
     {
@@ -415,10 +415,10 @@
         "mode": "Incremental",
         "parameters": {
           "adminPassword": {
-            "value": "[parameters('VmPassword')]"
+            "value": "[parameters('vmPassword')]"
           },
           "adminUsername": {
-            "value": "[parameters('VmUsername')]"
+            "value": "[parameters('vmUsername')]"
           },
           "imageOffer": {
             "value": "WindowsServer"
@@ -716,10 +716,10 @@
         "mode": "Incremental",
         "parameters": {
           "adminPassword": {
-            "value": "[parameters('VmPassword')]"
+            "value": "[parameters('vmPassword')]"
           },
           "adminUsername": {
-            "value": "[parameters('VmUsername')]"
+            "value": "[parameters('vmUsername')]"
           },
           "imageOffer": {
             "value": "WindowsServer"

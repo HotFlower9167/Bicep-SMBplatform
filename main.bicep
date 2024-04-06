@@ -13,16 +13,16 @@ var RG2 = 'RG-identity'
 @description('insert the name of the company')
 @minLength(1)
 @maxLength(12)
-param customername string ='ACS'
+param customerName string ='ACS'
 @description('Username used for local administrator in the VM')
 @minLength(8)
 @maxLength(24)
-param VmUsername string = 'hotpolluter42069'
+param vmUsername string = 'hotpolluter42069'
 @description('Password used for the local administrator of the VM')
 @secure()
-param VmPassword string
-var vnetname = 'vnet-${customername}'
-var subnetname = 'snet-${customername}'
+param vmPassword string
+var vnetname = 'vnet-${customerName}'
+var subnetname = 'snet-${customerName}'
 targetScope = 'subscription'
 
 @description('deploy platform RGs')
@@ -86,8 +86,8 @@ module DC01 'DomainController/DCs.bicep' = {
   scope: rg02
   name: 'dc01-azure'
   params: {
-    adminPassword: VmPassword
-    adminUsername: VmUsername
+    adminPassword: vmPassword
+    adminUsername: vmUsername
     imageOffer: 'WindowsServer'
     imagePublisher: 'MicrosoftWindowsServer'
     imageSku: '2022-datacenter-azure-edition-hotpatch-smalldisk'
@@ -128,8 +128,8 @@ module DC02 'DomainController/DCs.bicep' = {
   scope: rg02
   name: 'AZ-DC02'
   params: {
-    adminPassword: VmPassword
-    adminUsername: VmUsername
+    adminPassword: vmPassword
+    adminUsername: vmUsername
     imageOffer: 'WindowsServer'
     imagePublisher: 'MicrosoftWindowsServer'
     imageSku: '2022-datacenter-azure-edition-hotpatch-smalldisk'
