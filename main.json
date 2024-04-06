@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.25.53.49325",
-      "templateHash": "2133372815623757054"
+      "version": "0.26.54.24096",
+      "templateHash": "9026763363500509784"
     }
   },
   "parameters": {
@@ -33,7 +33,7 @@
         "description": "insert the name of the company"
       }
     },
-    "VMusername": {
+    "VmUsername": {
       "type": "string",
       "defaultValue": "hotpolluter42069",
       "minLength": 8,
@@ -42,7 +42,7 @@
         "description": "Username used for local administrator in the VM"
       }
     },
-    "VMpassword": {
+    "VmPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Password used for the local administrator of the VM"
@@ -104,8 +104,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "1340593631595242650"
+              "version": "0.26.54.24096",
+              "templateHash": "9312796910879122157"
             }
           },
           "parameters": {
@@ -178,8 +178,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "10059962833822154311"
+              "version": "0.26.54.24096",
+              "templateHash": "7681400796419764103"
             }
           },
           "parameters": {
@@ -259,8 +259,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "1760147066367571622"
+              "version": "0.26.54.24096",
+              "templateHash": "3995960678534292044"
             }
           },
           "parameters": {
@@ -333,8 +333,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "8117534489897330819"
+              "version": "0.26.54.24096",
+              "templateHash": "3283845150837778550"
             }
           },
           "parameters": {
@@ -415,10 +415,10 @@
         "mode": "Incremental",
         "parameters": {
           "adminPassword": {
-            "value": "[parameters('VMpassword')]"
+            "value": "[parameters('VmPassword')]"
           },
           "adminUsername": {
-            "value": "[parameters('VMusername')]"
+            "value": "[parameters('VmUsername')]"
           },
           "imageOffer": {
             "value": "WindowsServer"
@@ -448,8 +448,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "5865411850512849988"
+              "version": "0.26.54.24096",
+              "templateHash": "10989087437789644451"
             }
           },
           "parameters": {
@@ -560,8 +560,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "1760147066367571622"
+              "version": "0.26.54.24096",
+              "templateHash": "3995960678534292044"
             }
           },
           "parameters": {
@@ -634,8 +634,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "8117534489897330819"
+              "version": "0.26.54.24096",
+              "templateHash": "3283845150837778550"
             }
           },
           "parameters": {
@@ -716,10 +716,10 @@
         "mode": "Incremental",
         "parameters": {
           "adminPassword": {
-            "value": "[parameters('VMpassword')]"
+            "value": "[parameters('VmPassword')]"
           },
           "adminUsername": {
-            "value": "[parameters('VMusername')]"
+            "value": "[parameters('VmUsername')]"
           },
           "imageOffer": {
             "value": "WindowsServer"
@@ -749,8 +749,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.25.53.49325",
-              "templateHash": "5865411850512849988"
+              "version": "0.26.54.24096",
+              "templateHash": "10989087437789644451"
             }
           },
           "parameters": {
