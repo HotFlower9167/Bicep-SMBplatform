@@ -17,10 +17,10 @@ param customername string ='ACS'
 @description('Username used for local administrator in the VM')
 @minLength(8)
 @maxLength(24)
-param VMusername string = 'hotpolluter42069'
+param VmUsername string = 'hotpolluter42069'
 @description('Password used for the local administrator of the VM')
 @secure()
-param VMpassword string
+param VmPassword string
 var vnetname = 'vnet-${customername}'
 var subnetname = 'snet-${customername}'
 targetScope = 'subscription'
@@ -86,8 +86,8 @@ module DC01 'DomainController/DCs.bicep' = {
   scope: rg02
   name: 'dc01-azure'
   params: {
-    adminPassword: VMpassword
-    adminUsername: VMusername
+    adminPassword: VmPassword
+    adminUsername: VmUsername
     imageOffer: 'WindowsServer'
     imagePublisher: 'MicrosoftWindowsServer'
     imageSku: '2022-datacenter-azure-edition-hotpatch-smalldisk'
@@ -128,8 +128,8 @@ module DC02 'DomainController/DCs.bicep' = {
   scope: rg02
   name: 'AZ-DC02'
   params: {
-    adminPassword: VMpassword
-    adminUsername: VMusername
+    adminPassword: VmPassword
+    adminUsername: VmUsername
     imageOffer: 'WindowsServer'
     imagePublisher: 'MicrosoftWindowsServer'
     imageSku: '2022-datacenter-azure-edition-hotpatch-smalldisk'
